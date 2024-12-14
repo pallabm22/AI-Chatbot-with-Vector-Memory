@@ -1,5 +1,4 @@
 from llm import llm
-from embeddings import embeddings
 import chromadb
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
@@ -10,7 +9,7 @@ def Convo_with_Vector_Memeory():
     
 
     Persitent_client=chromadb.PersistentClient()
-    collection=Persitent_client.get_or_create_collection("chat_history")
+    collection=Persitent_client.get_or_create_collection("chat_history2")
     
 
 
@@ -23,7 +22,7 @@ def Convo_with_Vector_Memeory():
 
         
         try:
-            query_ans = collection.query(query_texts=[user_input], n_results=5)
+            query_ans = collection.query(query_texts=[user_input], n_results=10)
             context = query_ans["documents"] if query_ans["documents"] else "No previous context is found."
             print(f"Found Context: {context}")
         except Exception as e:
@@ -53,12 +52,11 @@ def Convo_with_Vector_Memeory():
         count=len(collection.get()["ids"])
         try:
             collection.add(
-                documents=[response],
-                metadatas=[{"user_input": user_input}],
+                documents=[user_input],
                 ids=[f"interaction-{count+1}"]  
             )
-            # print(f"Interaction {count} is completed.")
-            # print("Saved to ChromaDB.")
+            print(f"Interaction {count} is completed.")
+            print("Saved to ChromaDB.")
         except Exception as e:
             print(f"Error saving to database: {e}")
 
